@@ -1,5 +1,6 @@
 import ClientGraphQLProviderDynamic from '@/ui/api-service/client/GraphQLClientProviderDynamic'
 import MainAppLayout from '@/ui/components/MainAppLayout'
+import ThemeProviderDynamic from '@/ui/theme/ThemeProviderDynamic'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         <ClientGraphQLProviderDynamic>
-          <MainAppLayout>{children}</MainAppLayout>
+          <ThemeProviderDynamic>
+            <MainAppLayout>{children}</MainAppLayout>
+          </ThemeProviderDynamic>
         </ClientGraphQLProviderDynamic>
       </body>
     </html>
