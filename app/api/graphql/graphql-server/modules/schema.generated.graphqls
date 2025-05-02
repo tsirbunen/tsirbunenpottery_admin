@@ -1,0 +1,8 @@
+type Mutation {
+  pingMutation: String
+}
+
+type Query {
+  pingProducts: String
+  pingQuery: String
+}
