@@ -12,6 +12,28 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  JSON: { input: any; output: any; }
+};
+
+export type Category = {
+  __typename?: 'Category';
+  id: Scalars['ID']['output'];
+  names: Scalars['JSON']['output'];
+};
+
+export type Collection = {
+  __typename?: 'Collection';
+  id: Scalars['ID']['output'];
+  names: Scalars['JSON']['output'];
+};
+
+export type Design = {
+  __typename?: 'Design';
+  categoryIds: Array<Scalars['ID']['output']>;
+  description: Scalars['JSON']['output'];
+  details: Scalars['JSON']['output'];
+  id: Scalars['ID']['output'];
+  names: Scalars['JSON']['output'];
 };
 
 export type Mutation = {
@@ -19,8 +41,25 @@ export type Mutation = {
   pingMutation?: Maybe<Scalars['String']['output']>;
 };
 
+export type Piece = {
+  __typename?: 'Piece';
+  collectionId?: Maybe<Scalars['ID']['output']>;
+  designId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  imageFileNames: Array<Scalars['String']['output']>;
+  serialNumber: Scalars['Int']['output'];
+};
+
+export type ProductsData = {
+  __typename?: 'ProductsData';
+  categories: Array<Category>;
+  collections: Array<Collection>;
+  designs: Array<Design>;
+  pieces: Array<Piece>;
+};
+
 export type Query = {
   __typename?: 'Query';
-  pingProducts?: Maybe<Scalars['String']['output']>;
+  allProducts: ProductsData;
   pingQuery?: Maybe<Scalars['String']['output']>;
 };

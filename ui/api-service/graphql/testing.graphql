@@ -1,3 +1,26 @@
 query PingProducts {
-  pingProducts
+  allProducts {
+    collections {
+      id
+      names
+    }
+    categories {
+      id
+      names
+    }
+    designs {
+      id
+      names
+      categoryIds
+      description
+      details
+    }
+    pieces {
+      id
+      serialNumber
+      designId
+      imageFileNames
+      collectionId
+    }
+  }
 }

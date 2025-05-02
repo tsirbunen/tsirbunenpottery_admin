@@ -1,3 +1,38 @@
+scalar JSON
+
+type Collection {
+  id: ID!
+  names: JSON!
+}
+
+type Category {
+  id: ID!
+  names: JSON!
+}
+
+type Design {
+  id: ID!
+  names: JSON!
+  categoryIds: [ID!]!
+  description: JSON!
+  details: JSON!
+}
+
+type Piece {
+  id: ID!
+  serialNumber: Int!
+  designId: ID!
+  imageFileNames: [String!]!
+  collectionId: ID
+}
+
+type ProductsData {
+  collections: [Collection!]!
+  categories: [Category!]!
+  designs: [Design!]!
+  pieces: [Piece!]!
+}
+
 extend type Query {
-  pingProducts: String
+  allProducts: ProductsData!
 }

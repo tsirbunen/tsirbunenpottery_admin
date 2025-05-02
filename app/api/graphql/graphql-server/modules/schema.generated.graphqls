@@ -1,8 +1,43 @@
+type Category {
+  id: ID!
+  names: JSON!
+}
+
+type Collection {
+  id: ID!
+  names: JSON!
+}
+
+type Design {
+  categoryIds: [ID!]!
+  description: JSON!
+  details: JSON!
+  id: ID!
+  names: JSON!
+}
+
+scalar JSON
+
 type Mutation {
   pingMutation: String
 }
 
+type Piece {
+  collectionId: ID
+  designId: ID!
+  id: ID!
+  imageFileNames: [String!]!
+  serialNumber: Int!
+}
+
+type ProductsData {
+  categories: [Category!]!
+  collections: [Collection!]!
+  designs: [Design!]!
+  pieces: [Piece!]!
+}
+
 type Query {
-  pingProducts: String
+  allProducts: ProductsData!
   pingQuery: String
 }
