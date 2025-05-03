@@ -1,7 +1,7 @@
 scalar JSON
 
 type Collection {
-  id: ID!
+  id: String!
   names: JSON!
 }
 
@@ -10,7 +10,7 @@ input CollectionInput {
 }
 
 type Category {
-  id: ID!
+  id: String!
   names: JSON!
 }
 
@@ -19,32 +19,32 @@ input CategoryInput {
 }
 
 type Design {
-  id: ID!
+  id: String!
   names: JSON!
-  categoryIds: [ID!]!
+  categoryIds: [String!]!
   description: JSON!
   details: JSON!
 }
 
 input DesignInput {
   names: JSON!
-  categoryIds: [ID!]!
+  categoryIds: [String!]!
   description: JSON!
   details: JSON!
 }
 
 type Piece {
-  id: ID!
+  id: String!
   serialNumber: Int!
-  designId: ID!
+  designId: String!
   imageFileNames: [String!]!
-  collectionId: ID
+  collectionId: String
 }
 
 input PieceInput {
-  designId: ID!
+  designId: String!
   imageFileNames: [String!]!
-  collectionId: ID
+  collectionId: String
 }
 
 type ProductsData {
@@ -63,4 +63,9 @@ extend type Mutation {
   createCategory(input: CategoryInput!): Category
   createDesign(input: DesignInput!): Design
   createPiece(input: PieceInput!): Piece
+
+  updateCollection(id: String!, input: CollectionInput!): Collection
+  updateCategory(id: String!, input: CategoryInput!): Category
+  updateDesign(id: String!, input: DesignInput!): Design
+  updatePiece(id: String!, input: PieceInput!): Piece
 }

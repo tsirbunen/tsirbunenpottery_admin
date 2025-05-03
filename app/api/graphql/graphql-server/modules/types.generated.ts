@@ -9,7 +9,7 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string | number; }
+  ID: { input: string; output: string; }
   String: { input: string; output: string; }
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
@@ -19,7 +19,7 @@ export type Scalars = {
 
 export type Category = {
   __typename?: 'Category';
-  id: Scalars['ID']['output'];
+  id: Scalars['String']['output'];
   names: Scalars['JSON']['output'];
 };
 
@@ -29,7 +29,7 @@ export type CategoryInput = {
 
 export type Collection = {
   __typename?: 'Collection';
-  id: Scalars['ID']['output'];
+  id: Scalars['String']['output'];
   names: Scalars['JSON']['output'];
 };
 
@@ -39,15 +39,15 @@ export type CollectionInput = {
 
 export type Design = {
   __typename?: 'Design';
-  categoryIds: Array<Scalars['ID']['output']>;
+  categoryIds: Array<Scalars['String']['output']>;
   description: Scalars['JSON']['output'];
   details: Scalars['JSON']['output'];
-  id: Scalars['ID']['output'];
+  id: Scalars['String']['output'];
   names: Scalars['JSON']['output'];
 };
 
 export type DesignInput = {
-  categoryIds: Array<Scalars['ID']['input']>;
+  categoryIds: Array<Scalars['String']['input']>;
   description: Scalars['JSON']['input'];
   details: Scalars['JSON']['input'];
   names: Scalars['JSON']['input'];
@@ -60,6 +60,10 @@ export type Mutation = {
   createDesign?: Maybe<Design>;
   createPiece?: Maybe<Piece>;
   pingMutation?: Maybe<Scalars['String']['output']>;
+  updateCategory?: Maybe<Category>;
+  updateCollection?: Maybe<Collection>;
+  updateDesign?: Maybe<Design>;
+  updatePiece?: Maybe<Piece>;
 };
 
 
@@ -82,18 +86,42 @@ export type MutationcreatePieceArgs = {
   input: PieceInput;
 };
 
+
+export type MutationupdateCategoryArgs = {
+  id: Scalars['String']['input'];
+  input: CategoryInput;
+};
+
+
+export type MutationupdateCollectionArgs = {
+  id: Scalars['String']['input'];
+  input: CollectionInput;
+};
+
+
+export type MutationupdateDesignArgs = {
+  id: Scalars['String']['input'];
+  input: DesignInput;
+};
+
+
+export type MutationupdatePieceArgs = {
+  id: Scalars['String']['input'];
+  input: PieceInput;
+};
+
 export type Piece = {
   __typename?: 'Piece';
-  collectionId?: Maybe<Scalars['ID']['output']>;
-  designId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
+  collectionId?: Maybe<Scalars['String']['output']>;
+  designId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
   imageFileNames: Array<Scalars['String']['output']>;
   serialNumber: Scalars['Int']['output'];
 };
 
 export type PieceInput = {
-  collectionId?: InputMaybe<Scalars['ID']['input']>;
-  designId: Scalars['ID']['input'];
+  collectionId?: InputMaybe<Scalars['String']['input']>;
+  designId: Scalars['String']['input'];
   imageFileNames: Array<Scalars['String']['input']>;
 };
 
@@ -183,7 +211,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Category: ResolverTypeWrapper<Category>;
-  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
   CategoryInput: CategoryInput;
   Collection: ResolverTypeWrapper<Collection>;
   CollectionInput: CollectionInput;
@@ -191,7 +219,6 @@ export type ResolversTypes = {
   DesignInput: DesignInput;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
   Piece: ResolverTypeWrapper<Piece>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   PieceInput: PieceInput;
@@ -203,7 +230,7 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Category: Category;
-  ID: Scalars['ID']['output'];
+  String: Scalars['String']['output'];
   CategoryInput: CategoryInput;
   Collection: Collection;
   CollectionInput: CollectionInput;
@@ -211,7 +238,6 @@ export type ResolversParentTypes = {
   DesignInput: DesignInput;
   JSON: Scalars['JSON']['output'];
   Mutation: {};
-  String: Scalars['String']['output'];
   Piece: Piece;
   Int: Scalars['Int']['output'];
   PieceInput: PieceInput;
@@ -221,22 +247,22 @@ export type ResolversParentTypes = {
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   names?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CollectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Collection'] = ResolversParentTypes['Collection']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   names?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DesignResolvers<ContextType = any, ParentType extends ResolversParentTypes['Design'] = ResolversParentTypes['Design']> = {
-  categoryIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
+  categoryIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   details?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   names?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -251,12 +277,16 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createDesign?: Resolver<Maybe<ResolversTypes['Design']>, ParentType, ContextType, RequireFields<MutationcreateDesignArgs, 'input'>>;
   createPiece?: Resolver<Maybe<ResolversTypes['Piece']>, ParentType, ContextType, RequireFields<MutationcreatePieceArgs, 'input'>>;
   pingMutation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updateCategory?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<MutationupdateCategoryArgs, 'id' | 'input'>>;
+  updateCollection?: Resolver<Maybe<ResolversTypes['Collection']>, ParentType, ContextType, RequireFields<MutationupdateCollectionArgs, 'id' | 'input'>>;
+  updateDesign?: Resolver<Maybe<ResolversTypes['Design']>, ParentType, ContextType, RequireFields<MutationupdateDesignArgs, 'id' | 'input'>>;
+  updatePiece?: Resolver<Maybe<ResolversTypes['Piece']>, ParentType, ContextType, RequireFields<MutationupdatePieceArgs, 'id' | 'input'>>;
 };
 
 export type PieceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Piece'] = ResolversParentTypes['Piece']> = {
-  collectionId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  designId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  collectionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  designId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   imageFileNames?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   serialNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

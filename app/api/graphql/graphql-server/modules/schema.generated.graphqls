@@ -1,5 +1,5 @@
 type Category {
-  id: ID!
+  id: String!
   names: JSON!
 }
 
@@ -8,7 +8,7 @@ input CategoryInput {
 }
 
 type Collection {
-  id: ID!
+  id: String!
   names: JSON!
 }
 
@@ -17,15 +17,15 @@ input CollectionInput {
 }
 
 type Design {
-  categoryIds: [ID!]!
+  categoryIds: [String!]!
   description: JSON!
   details: JSON!
-  id: ID!
+  id: String!
   names: JSON!
 }
 
 input DesignInput {
-  categoryIds: [ID!]!
+  categoryIds: [String!]!
   description: JSON!
   details: JSON!
   names: JSON!
@@ -39,19 +39,23 @@ type Mutation {
   createDesign(input: DesignInput!): Design
   createPiece(input: PieceInput!): Piece
   pingMutation: String
+  updateCategory(id: String!, input: CategoryInput!): Category
+  updateCollection(id: String!, input: CollectionInput!): Collection
+  updateDesign(id: String!, input: DesignInput!): Design
+  updatePiece(id: String!, input: PieceInput!): Piece
 }
 
 type Piece {
-  collectionId: ID
-  designId: ID!
-  id: ID!
+  collectionId: String
+  designId: String!
+  id: String!
   imageFileNames: [String!]!
   serialNumber: Int!
 }
 
 input PieceInput {
-  collectionId: ID
-  designId: ID!
+  collectionId: String
+  designId: String!
   imageFileNames: [String!]!
 }
 

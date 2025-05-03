@@ -7,6 +7,20 @@ export async function fetchDocsFromCloud(collectionName: CollectionName, db: DB)
   return docs
 }
 
+export async function fetchDocByIdFromCloud(
+  collectionName: CollectionName,
+  db: DB,
+  id: string
+): Promise<Doc | undefined> {
+  const snapshot = await db.collection(collectionName).doc(id).get()
+
+  return snapshot.exists ? (snapshot as Doc) : undefined
+}
+
+export async function updateDocByIdInCloud(collectionName: CollectionName, db: DB, id: string, updateData: InputData) {
+  return await db.collection(collectionName).doc(id).update(updateData)
+}
+
 export async function createNewEntryToCloud(collectionName: CollectionName, newId: string, input: InputData, db: DB) {
   return await db.collection(collectionName).doc(newId).set(input)
 }
@@ -64,4 +78,19 @@ export function translationsAreValid(descriptions: Record<string, string>, keys:
 
 export function idsExist(requiredIds: string[], items: { id: string }[]): boolean {
   return requiredIds.every((id) => items.some((item) => item.id === id))
+}
+
+export function separateThisAndOtherItems<T extends { id: string }>(items: T[], id: string) {
+  let thisItem: T | undefined = undefined
+  const otherItems: T[] = []
+
+  items.forEach((collection) => {
+    if (collection.id === id) {
+      thisItem = collection
+    } else {
+      otherItems.push(collection)
+    }
+  })
+
+  return { thisItem, otherItems }
 }

@@ -22,7 +22,10 @@ export const db = admin.firestore()
 
 export type DB = admin.firestore.Firestore
 
-export type Doc = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData, admin.firestore.DocumentData>
+export type Doc = Omit<
+  admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData, admin.firestore.DocumentData>,
+  'createTime' | 'updateTime'
+>
 
 export type DocRef = admin.firestore.DocumentReference
 
