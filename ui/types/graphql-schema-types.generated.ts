@@ -21,10 +21,18 @@ export type Category = {
   names: Scalars['JSON']['output'];
 };
 
+export type CategoryInput = {
+  names: Scalars['JSON']['input'];
+};
+
 export type Collection = {
   __typename?: 'Collection';
   id: Scalars['ID']['output'];
   names: Scalars['JSON']['output'];
+};
+
+export type CollectionInput = {
+  names: Scalars['JSON']['input'];
 };
 
 export type Design = {
@@ -36,9 +44,40 @@ export type Design = {
   names: Scalars['JSON']['output'];
 };
 
+export type DesignInput = {
+  categoryIds: Array<Scalars['ID']['input']>;
+  description: Scalars['JSON']['input'];
+  details: Scalars['JSON']['input'];
+  names: Scalars['JSON']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createCategory?: Maybe<Category>;
+  createCollection?: Maybe<Collection>;
+  createDesign?: Maybe<Design>;
+  createPiece?: Maybe<Piece>;
   pingMutation?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type MutationCreateCategoryArgs = {
+  input: CategoryInput;
+};
+
+
+export type MutationCreateCollectionArgs = {
+  input: CollectionInput;
+};
+
+
+export type MutationCreateDesignArgs = {
+  input: DesignInput;
+};
+
+
+export type MutationCreatePieceArgs = {
+  input: PieceInput;
 };
 
 export type Piece = {
@@ -48,6 +87,12 @@ export type Piece = {
   id: Scalars['ID']['output'];
   imageFileNames: Array<Scalars['String']['output']>;
   serialNumber: Scalars['Int']['output'];
+};
+
+export type PieceInput = {
+  collectionId?: InputMaybe<Scalars['ID']['input']>;
+  designId: Scalars['ID']['input'];
+  imageFileNames: Array<Scalars['String']['input']>;
 };
 
 export type ProductsData = {

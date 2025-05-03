@@ -5,13 +5,28 @@ type Collection {
   names: JSON!
 }
 
+input CollectionInput {
+  names: JSON!
+}
+
 type Category {
   id: ID!
   names: JSON!
 }
 
+input CategoryInput {
+  names: JSON!
+}
+
 type Design {
   id: ID!
+  names: JSON!
+  categoryIds: [ID!]!
+  description: JSON!
+  details: JSON!
+}
+
+input DesignInput {
   names: JSON!
   categoryIds: [ID!]!
   description: JSON!
@@ -26,6 +41,12 @@ type Piece {
   collectionId: ID
 }
 
+input PieceInput {
+  designId: ID!
+  imageFileNames: [String!]!
+  collectionId: ID
+}
+
 type ProductsData {
   collections: [Collection!]!
   categories: [Category!]!
@@ -35,4 +56,11 @@ type ProductsData {
 
 extend type Query {
   allProducts: ProductsData!
+}
+
+extend type Mutation {
+  createCollection(input: CollectionInput!): Collection
+  createCategory(input: CategoryInput!): Category
+  createDesign(input: DesignInput!): Design
+  createPiece(input: PieceInput!): Piece
 }

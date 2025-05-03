@@ -1,34 +1,21 @@
-import admin from 'firebase-admin'
-import { Category, Collection, Design, Piece, ProductsData } from '../modules/types.generated'
-
-const projectId = process.env.FIREBASE_PROJECT_ID
-const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
-const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-
-if (!projectId || !clientEmail || !privateKey) {
-  throw new Error('Firebase credentials are not set in the environment variables.')
-}
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId,
-      clientEmail,
-      privateKey
-    })
-  })
-}
-
-export const db = admin.firestore()
-
-export enum CollectionName {
-  collections = 'collections',
-  categories = 'categories',
-  designs = 'designs',
-  pieces = 'pieces'
-}
-
-type Doc = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData, admin.firestore.DocumentData>
+import {
+  Category,
+  CategoryInput,
+  Collection,
+  CollectionInput,
+  Design,
+  DesignInput,
+  PieceInput,
+  ProductsData,
+  Piece
+} from '../modules/types.generated'
+import { fetchCurrentCategories } from './category-utils'
+import { db } from './cloud-connection'
+import { fetchCurrentCollections } from './collection-utils'
+import { fetchCurrentDesigns } from './design-utils'
+import { CollectionName } from './models'
+import { createNextSerialNumber, fetchCurrentPieces, imageFileNamesAreValid } from './piece-utils'
+import { createNewEntryToCloud, createNextId, idsExist, newNamesAreNew, translationsAreValid } from './utils'
 
 export class ProductsHandler {
   async fetchAllProducts(): Promise<ProductsData> {
@@ -39,92 +26,167 @@ export class ProductsHandler {
       [CollectionName.pieces]: []
     }
 
-    const collectionDocs = await this.fetchCollectionDocs(CollectionName.collections)
-    products[CollectionName.collections] = this.toCollections(collectionDocs)
-
-    const categoryDocs = await this.fetchCollectionDocs(CollectionName.categories)
-    products[CollectionName.categories] = this.toCategories(categoryDocs)
-
-    const designDocs = await this.fetchCollectionDocs(CollectionName.designs)
-    products[CollectionName.designs] = this.toDesigns(designDocs, products[CollectionName.categories] as Category[])
-
-    const pieceDocs = await this.fetchCollectionDocs(CollectionName.pieces)
-    products[CollectionName.pieces] = this.toPieces(
-      pieceDocs,
-      products[CollectionName.collections] as Collection[],
-      products[CollectionName.designs] as Design[]
+    products[CollectionName.collections] = await fetchCurrentCollections(db)
+    products[CollectionName.categories] = await fetchCurrentCategories(db)
+    products[CollectionName.designs] = await fetchCurrentDesigns(db, products[CollectionName.categories])
+    products[CollectionName.pieces] = await fetchCurrentPieces(
+      db,
+      products[CollectionName.collections],
+      products[CollectionName.designs]
     )
 
     return products
   }
 
-  async fetchCollectionDocs(collectionName: CollectionName): Promise<Doc[]> {
-    const snapshot = await db.collection(collectionName).get()
-    const docs = snapshot.docs
-    return docs
+  async createCollection(collectionInput: CollectionInput): Promise<Collection> {
+    const currentCollections = await fetchCurrentCollections(db)
+
+    if (!newNamesAreNew(currentCollections, collectionInput.names)) {
+      return Promise.reject(new Error('Collection names already exist'))
+    }
+
+    const newId = createNextId(currentCollections as { id: string }[], CollectionName.collections)
+    const newCollection = await createNewEntryToCloud(
+      CollectionName.collections,
+      newId,
+      {
+        names: collectionInput.names
+      },
+      db
+    )
+
+    if (!newCollection) {
+      throw new Error('Failed to create new collection')
+    }
+
+    return {
+      names: collectionInput.names,
+      id: newId
+    }
   }
 
-  toCollections(docs: Doc[]): Collection[] {
-    return docs.map((doc) => {
-      const data = doc.data()
-      return { id: doc.id, names: data.names } as Collection
-    })
+  async createCategory(categoryInput: CategoryInput): Promise<Category> {
+    const currentCategories = await fetchCurrentCategories(db)
+
+    if (!newNamesAreNew(currentCategories, categoryInput.names)) {
+      return Promise.reject(new Error('Category names already exist'))
+    }
+
+    const newId = createNextId(currentCategories as { id: string }[], CollectionName.categories)
+    const newCategory = await createNewEntryToCloud(
+      CollectionName.categories,
+      newId,
+      {
+        names: categoryInput.names
+      },
+      db
+    )
+
+    if (!newCategory) {
+      throw new Error('Failed to create new category')
+    }
+
+    return {
+      names: categoryInput.names,
+      id: newId
+    }
   }
 
-  toCategories(docs: Doc[]): Category[] {
-    return docs.map((doc) => {
-      const data = doc.data()
-      return { id: doc.id, names: data.names } as Category
-    })
+  async createDesign(input: DesignInput): Promise<Design> {
+    const currentCategories = await fetchCurrentCategories(db)
+    const currentDesigns = await fetchCurrentDesigns(db, currentCategories)
+    const designInput = {
+      ...input,
+      details: Object.entries(input.details).reduce((acc, [key, value]) => {
+        acc[key] = JSON.stringify(value)
+        return acc
+      }, {} as Record<string, string>)
+    }
+
+    if (!newNamesAreNew(currentDesigns, designInput.names)) {
+      return Promise.reject(new Error('Design names already exist'))
+    }
+
+    if (!translationsAreValid(designInput.description, Object.keys(designInput.names))) {
+      return Promise.reject(new Error('Design descriptions are not valid'))
+    }
+
+    if (!translationsAreValid(designInput.details, Object.keys(designInput.names))) {
+      return Promise.reject(new Error('Design details are not valid'))
+    }
+
+    if (!idsExist(designInput.categoryIds, currentCategories as { id: string }[])) {
+      return Promise.reject(new Error('Design category references do not exist'))
+    }
+
+    const newId = createNextId(currentDesigns as { id: string }[], CollectionName.designs)
+
+    const newDesign = await createNewEntryToCloud(
+      CollectionName.designs,
+      newId,
+      {
+        ...designInput
+      },
+      db
+    )
+
+    if (!newDesign) {
+      throw new Error('Failed to create new design')
+    }
+
+    return {
+      names: designInput.names,
+      id: newId,
+      categoryIds: designInput.categoryIds,
+      description: designInput.description,
+      details: designInput.details
+    }
   }
 
-  toDesigns(docs: Doc[], categories: Category[]): Design[] {
-    return docs.map((doc) => {
-      const data = doc.data()
-      const categoryIds: string[] = []
-      data.categoryIds.forEach((catRef: admin.firestore.DocumentReference) => {
-        const existingCategory = categories.find((cat) => cat.id === catRef.id)
-        if (existingCategory) {
-          categoryIds.push(catRef.id)
-        }
-      })
+  async createPiece(pieceInput: PieceInput): Promise<Piece> {
+    const currentCollections = await fetchCurrentCollections(db)
+    const currentCategories = await fetchCurrentCategories(db)
+    const currentDesigns = await fetchCurrentDesigns(db, currentCategories)
+    const currentPieces = await fetchCurrentPieces(db, currentCollections, currentDesigns)
 
-      const parsedDetails = Object.fromEntries(
-        Object.entries(data.details).map(([key, value]) => [key, JSON.parse(value as string)])
-      )
+    const collectionId = pieceInput.collectionId
+    if (collectionId && !idsExist([collectionId], currentCollections as { id: string }[])) {
+      return Promise.reject(new Error('Piece collection reference does not exist'))
+    }
 
-      return {
-        id: doc.id,
-        names: data.names,
-        categoryIds,
-        description: data.description,
-        details: parsedDetails
-      } as Design
-    })
-  }
+    const designId = pieceInput.designId
+    if (designId && !idsExist([designId], currentDesigns as { id: string }[])) {
+      return Promise.reject(new Error('Piece design reference does not exist'))
+    }
 
-  toPieces(docs: Doc[], collections: Collection[], designs: Design[]): Piece[] {
-    return docs.map((doc) => {
-      const data = doc.data()
+    if (!imageFileNamesAreValid(pieceInput.imageFileNames)) {
+      return Promise.reject(new Error('Piece image file names are not valid'))
+    }
 
-      const designIdRef = data.designId
-      const designId = designIdRef
-        ? designs.find((design) => design.id === (designIdRef as admin.firestore.DocumentReference).id)?.id
-        : null
+    const serialNumber = createNextSerialNumber(currentPieces as Piece[])
 
-      const collectionRef = data.collectionId
-      const collectionId = collectionRef
-        ? collections.find((collection) => collection.id === (collectionRef as admin.firestore.DocumentReference).id)
-            ?.id
-        : null
+    const newId = createNextId(currentPieces as { id: string }[], CollectionName.pieces)
 
-      return {
-        id: doc.id,
-        serialNumber: data.serialNumber,
-        designId,
-        imageFileNames: data.imageFileNames,
-        collectionId
-      } as Piece
-    })
+    const newPiece = await createNewEntryToCloud(
+      CollectionName.pieces,
+      newId,
+      {
+        ...pieceInput,
+        serialNumber
+      },
+      db
+    )
+
+    if (!newPiece) {
+      throw new Error('Failed to create new piece')
+    }
+
+    return {
+      id: newId,
+      serialNumber,
+      designId,
+      imageFileNames: pieceInput.imageFileNames,
+      collectionId
+    }
   }
 }
