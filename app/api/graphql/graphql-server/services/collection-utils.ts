@@ -14,3 +14,8 @@ export function toCollections(docs: Doc[]): Collection[] {
     return { id: doc.id, names: data.names } as Collection
   })
 }
+
+export function toCollection(doc: Doc) {
+  const data = doc.data()
+  return { id: doc.id, names: data.names } as Collection
+}

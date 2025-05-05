@@ -18,11 +18,13 @@ export async function fetchDocByIdFromCloud(
 }
 
 export async function updateDocByIdInCloud(collectionName: CollectionName, db: DB, id: string, updateData: InputData) {
-  return await db.collection(collectionName).doc(id).update(updateData)
+  await db.collection(collectionName).doc(id).update(updateData)
+  return await fetchDocByIdFromCloud(collectionName, db, id)
 }
 
 export async function createNewEntryToCloud(collectionName: CollectionName, newId: string, input: InputData, db: DB) {
-  return await db.collection(collectionName).doc(newId).set(input)
+  await db.collection(collectionName).doc(newId).set(input)
+  return await fetchDocByIdFromCloud(collectionName, db, newId)
 }
 
 export function newNamesAreNew(

@@ -9,8 +9,10 @@ export async function fetchCurrentCategories(db: DB) {
 }
 
 export function toCategories(docs: Doc[]): Category[] {
-  return docs.map((doc) => {
-    const data = doc.data()
-    return { id: doc.id, names: data.names } as Category
-  })
+  return docs.map((doc) => toCategory(doc))
+}
+
+export function toCategory(doc: Doc) {
+  const data = doc.data()
+  return { id: doc.id, names: data.names } as Category
 }
