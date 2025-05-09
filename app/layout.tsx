@@ -1,5 +1,5 @@
 import ClientGraphQLProviderDynamic from '@/ui/api-service/client/GraphQLClientProviderDynamic'
-import MainAppLayout from '@/ui/components/MainAppLayout'
+import MainAppLayout from '@/ui/components/layout/MainAppLayout'
 import ThemeProviderDynamic from '@/ui/theme/ThemeProviderDynamic'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
