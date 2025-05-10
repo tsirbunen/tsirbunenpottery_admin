@@ -7,8 +7,8 @@ type TabProps = {
   children?: React.ReactNode
 }
 
-export const Tab = ({ tabName, children }: TabProps) => {
-  const { selectedTab: selectedTab } = useTabs()
+export const Tab = ({ tabName, children = null }: TabProps) => {
+  const { selectedTab } = useTabs()
 
   const isCurrentTab = selectedTab === tabName
 
@@ -16,5 +16,5 @@ export const Tab = ({ tabName, children }: TabProps) => {
     return null
   }
 
-  return children ?? <div />
+  return children
 }

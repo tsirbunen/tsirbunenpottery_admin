@@ -17,6 +17,10 @@ type TabsProviderProps = {
 export const TabsContextProvider: React.FC<TabsProviderProps> = ({ children, options, initialTab }) => {
   const [selectedTab, setSelectedTab] = useState<string>(initialTab || options[0].key)
 
+  if (!options.length) {
+    return null
+  }
+
   return <TabsContext.Provider value={{ selectedTab, setSelectedTab, options }}>{children}</TabsContext.Provider>
 }
 
