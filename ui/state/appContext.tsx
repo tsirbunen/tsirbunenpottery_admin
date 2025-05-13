@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, ReactNode, useContext, useReducer } from 'react'
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useReducer, useState } from 'react'
 import { Collection } from '../types/graphql-schema-types.generated'
 import { DispatchAction, reducer } from './reducer'
 
@@ -28,10 +28,10 @@ export type AppContextType = {
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
 
-type AppProviderProps = { children: ReactNode }
-
-export const AppContextProvider: React.FC<AppProviderProps> = ({ children }) => {
+function AppContextProvider({ children }: React.PropsWithChildren) {
   const [state, dispatch] = useReducer(reducer, initialAppState)
+
+  console.log('%c<AppContextProvider> rendered', 'color: green')
 
   return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>
 }
@@ -45,3 +45,5 @@ export const useAppContext = (): AppContextType => {
 
   return context
 }
+
+export default AppContextProvider

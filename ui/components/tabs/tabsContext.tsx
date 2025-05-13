@@ -1,3 +1,5 @@
+'use client'
+
 import React, { createContext, useState, ReactNode, useContext } from 'react'
 
 export type TabsContextType = {
@@ -9,20 +11,19 @@ export type TabsContextType = {
 export const TabsContext = createContext<TabsContextType | undefined>(undefined)
 
 type TabsProviderProps = {
-  options: Array<{ key: string; label: string }>
-  initialTab?: string
+  tabOptions: Array<{ key: string; label: string }>
+  initialTab: string
   children: ReactNode
 }
 
-export const TabsContextProvider: React.FC<TabsProviderProps> = ({ children, options, initialTab }) => {
-  const [selectedTab, setSelectedTab] = useState<string>(initialTab || options[0].key)
+export const TabsContextProvider = React.memo(({ children, initialTab, tabOptions }: TabsProviderProps) => {
+  const [selectedTab, setSelectedTab] = useState<string>(initialTab)
+  const [options] = useState<Array<{ key: string; label: string }>>(tabOptions)
 
-  if (!options.length) {
-    return null
-  }
+  console.log('%c<Tabs> rendered', 'color: orange')
 
   return <TabsContext.Provider value={{ selectedTab, setSelectedTab, options }}>{children}</TabsContext.Provider>
-}
+})
 
 export const useTabs = (): TabsContextType => {
   const context = useContext(TabsContext)

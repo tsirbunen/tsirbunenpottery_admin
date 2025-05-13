@@ -1,5 +1,6 @@
 'use client'
 
+import { useHydrationGuard } from '@/ui/utils/useHydrationGuard'
 import { ApolloClient, HttpLink, InMemoryCache, type NormalizedCacheObject } from '@apollo/client'
 import { createContext, useState } from 'react'
 
@@ -25,7 +26,10 @@ export const GraphQLClientContext = createContext<GraphQLClient>({} as GraphQLCl
 
 function GraphQLClientProvider({ children }: React.PropsWithChildren) {
   const [graphqlClient] = useState(getClient())
+  // Note: We need a hydration guard to prevent re-renders
+  const isMounted = useHydrationGuard()
 
+  if (!isMounted) return null
   return <GraphQLClientContext.Provider value={{ client: graphqlClient }}>{children}</GraphQLClientContext.Provider>
 }
 

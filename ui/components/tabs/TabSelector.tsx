@@ -4,7 +4,7 @@ import { Button } from '@/ui/theme/button/Button'
 import { Visual } from '@/ui/theme/visual-enum'
 import { useTabs } from './tabsContext'
 
-const TabsSelector = () => {
+const TabsSelector = ({}: {}) => {
   const { selectedTab, setSelectedTab, options } = useTabs()
 
   return (

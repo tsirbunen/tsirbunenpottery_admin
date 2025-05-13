@@ -1,5 +1,8 @@
+'use client'
+
 import { Tab } from '@/ui/components/tabs/Tab'
 import Tabs from '@/ui/components/tabs/Tabs'
+import CollectionsView from './CollectionsView'
 
 type TabOption = 'collections' | 'categories' | 'designs' | 'pieces'
 
@@ -15,7 +18,7 @@ const ControlPanel = () => {
     <div style={{ ...columnStyle }}>
       <Tabs options={options} initialTab="collections">
         <Tab tabName="collections">
-          <div>test child component</div>
+          <CollectionsView />
         </Tab>
         <Tab tabName="categories"></Tab>
         <Tab tabName="designs"></Tab>

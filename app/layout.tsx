@@ -1,6 +1,6 @@
 import ClientGraphQLProviderDynamic from '@/ui/api-service/client/GraphQLClientProviderDynamic'
 import MainAppLayout from '@/ui/components/layout/MainAppLayout'
-import { AppContextProvider } from '@/ui/state/appContext'
+import AppContextProviderDynamic from '@/ui/state/AppContextProviderDynamic'
 import ThemeProviderDynamic from '@/ui/theme/ThemeProviderDynamic'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -19,21 +19,18 @@ export const metadata: Metadata = {
  * our app with all the providers.
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // biome-ignore lint/suspicious/useValidTypeof: Needs to be like this
-  if (typeof window === undefined) {
-    return <div>LOADING...</div>
-  }
+  console.log('%c<RootLayout> rendered', 'color: blue')
 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppContextProvider>
-          <ClientGraphQLProviderDynamic>
-            <ThemeProviderDynamic>
+        <ThemeProviderDynamic>
+          <AppContextProviderDynamic>
+            <ClientGraphQLProviderDynamic>
               <MainAppLayout>{children}</MainAppLayout>
-            </ThemeProviderDynamic>
-          </ClientGraphQLProviderDynamic>
-        </AppContextProvider>
+            </ClientGraphQLProviderDynamic>
+          </AppContextProviderDynamic>
+        </ThemeProviderDynamic>
       </body>
     </html>
   )

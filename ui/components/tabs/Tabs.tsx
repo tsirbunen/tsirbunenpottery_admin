@@ -2,24 +2,24 @@
 
 import TabsSelector from './TabSelector'
 import { TabsContextProvider } from './tabsContext'
+import React, { memo } from 'react'
 
 type TabsProps = {
   options: Array<{ key: string; label: string }>
-  initialTab?: string
-  children?: React.ReactNode
+  initialTab: string
+  children: React.ReactNode
 }
 
-const Tabs = ({ options, initialTab, children }: TabsProps) => {
+const Tabs = memo(({ options, initialTab, children }: TabsProps) => {
   return (
-    <TabsContextProvider options={options} initialTab={initialTab}>
-      <div style={{ ...columnStyle }}>
+    <div style={{ ...columnStyle }}>
+      <TabsContextProvider initialTab={initialTab} tabOptions={options}>
         <TabsSelector />
-
         {children}
-      </div>
-    </TabsContextProvider>
+      </TabsContextProvider>
+    </div>
   )
-}
+})
 
 export default Tabs
 
