@@ -23,4 +23,10 @@ const Tabs = memo(({ options, initialTab, children }: TabsProps) => {
 
 export default Tabs
 
-const columnStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column' }
+const columnStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
+  alignItems: 'center',
+  width: '100%'
+}
