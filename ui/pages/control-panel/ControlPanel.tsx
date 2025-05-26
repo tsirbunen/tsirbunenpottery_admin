@@ -49,6 +49,7 @@ export default ControlPanel
 const columnCss = {
   style: {
     justifyContent: 'center',
+    width: '100%',
     alignItems: 'center',
     flexDirection: 'column',
     display: 'flex',

@@ -6,9 +6,11 @@ type IdInfo = {
   serialNumber?: number
 }
 
+export type MainInfo = Array<{ label: string; content: string[][] }>
+
 export type ItemMainInfoProps = {
   idInfo: IdInfo
-  mainInfo: Array<{ label: string; content: string[][] }>
+  mainInfo: MainInfo
 }
 
 const ItemCardInfo = ({ idInfo, mainInfo }: ItemMainInfoProps) => {
@@ -35,9 +37,9 @@ const ItemCardInfo = ({ idInfo, mainInfo }: ItemMainInfoProps) => {
                 const optionalInfoFormatted = item.join(' | ')
 
                 return (
-                  <Text key={`${idInfo.id}-${optionalInfoFormatted}`} {...textStyle}>
-                    {optionalInfoFormatted}
-                  </Text>
+                  <div key={`${idInfo.id}-${optionalInfoFormatted}`} {...infoItemStyle}>
+                    <Text {...textStyle}>{optionalInfoFormatted}</Text>
+                  </div>
                 )
               } else {
                 return <Text {...textStyle}>{item}</Text>
@@ -85,9 +87,14 @@ const textStyle = {
   margin: 0,
   padding: 0
 }
-
 const infoStyle = {
   style: {
     marginTop: '5px'
+  } as React.CSSProperties
+}
+
+const infoItemStyle = {
+  style: {
+    marginTop: '1px'
   } as React.CSSProperties
 }

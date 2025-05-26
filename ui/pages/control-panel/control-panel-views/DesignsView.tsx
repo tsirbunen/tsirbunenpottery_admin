@@ -1,48 +1,38 @@
 import { useAppContext } from '@/ui/state/appContext'
-import ItemCard from '../item-card/ItemCard'
+import { Design, Piece } from '@/ui/types/graphql-schema-types.generated'
+import PanelView from './PanelView'
 
 const DesignsView = () => {
   const { state } = useAppContext()
   const designs = state.designs
 
-  return (
-    <div>
-      <div style={{ ...columnStyle }}>
-        {designs.map((design) => {
-          const pieces = state.pieces.filter((piece) => piece.designId === design.id)
-          const imageFileNames = pieces
-            .map((piece) => piece.imageFileNames[0])
-            .flat()
-            .filter(Boolean)
+  const piecesById = state.piecesById
 
-          const categories = design.categoryIds.map((categoryId) => state.categoriesById[categoryId])
-          const categoryNames = categories.map((category) => Object.values(category.names)) as string[][]
-          const idInfo = { id: design.id }
+  const attachExampleImages = (designs: Design[], piecesById: Record<string, Piece>) => {
+    const examplePieceImages = designs.map((design) => {
+      const examplePiece = Object.values(piecesById).find((piece) => piece.designId === design.id)
+      return examplePiece?.imageFileNames?.[0]
+    })
 
-          return (
-            <ItemCard
-              key={design.id}
-              idInfo={idInfo}
-              imageFileNames={imageFileNames}
-              mainInfo={[
-                { label: 'Names', content: [Object.values(design.names)] },
-                { label: 'Categories', content: categoryNames }
-              ]}
-            />
-          )
-        })}
-      </div>
-    </div>
-  )
+    const designsWithExampleImages = designs.map((design, index) => ({
+      ...design,
+      imageFileNames: examplePieceImages[index]
+    }))
+
+    return designsWithExampleImages
+  }
+
+  const mainInfoBuilder = (design: Design) => {
+    const categories = design.categoryIds.map((categoryId) => state.categoriesById[categoryId])
+    const categoryNames = categories.map((category) => Object.values(category.names)) as string[][]
+
+    return [
+      { label: 'Names', content: [Object.values(design.names)] as string[][] },
+      { label: 'Categories', content: categoryNames }
+    ]
+  }
+
+  return <PanelView items={attachExampleImages(designs, piecesById)} mainInfoBuilder={mainInfoBuilder} />
 }
 
 export default DesignsView
-
-const columnStyle: React.CSSProperties = {
-  justifyContent: 'center',
-  flexDirection: 'column',
-  display: 'flex',
-  flex: 1,
-  maxWidth: '500px',
-  marginTop: '10px'
-}

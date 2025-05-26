@@ -1,5 +1,8 @@
+import { Shades } from '@/ui/theme/shades'
 import { IconButton } from '@chakra-ui/react'
-import { TbEdit } from 'react-icons/tb'
+// FIXME: What icon to use?
+// import { TbEdit, TbHandGrab } from 'react-icons/tb'
+import { TbHandClick } from 'react-icons/tb'
 
 const iconSize = 25
 const iconButtonSize = 35
@@ -8,7 +11,7 @@ const ItemCardEditButton = () => {
   return (
     <div {...iconButtonContainerStyle}>
       <IconButton {...iconButtonStyle}>
-        <TbEdit size={iconSize} />
+        <TbHandClick size={iconSize} />
       </IconButton>
     </div>
   )
@@ -17,6 +20,8 @@ const ItemCardEditButton = () => {
 export default ItemCardEditButton
 
 const iconButtonStyle = {
+  color: Shades.DARK,
+  backgroundColor: 'transparent',
   borderWidth: 0,
   ariaLabel: 'Edit item',
   rounded: 'full',

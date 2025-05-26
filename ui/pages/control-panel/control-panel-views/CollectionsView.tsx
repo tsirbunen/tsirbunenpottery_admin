@@ -1,34 +1,17 @@
 import { useAppContext } from '@/ui/state/appContext'
-import ItemCard from '../item-card/ItemCard'
+import PanelView from './PanelView'
+import { Collection } from '@/ui/types/graphql-schema-types.generated'
 
 const CollectionsView = () => {
   const { state } = useAppContext()
   const collections = state.collections
 
-  return (
-    <div>
-      <div style={{ ...columnStyle }}>
-        {collections.map((collection) => {
-          return (
-            <ItemCard
-              key={collection.id}
-              idInfo={{ id: collection.id }}
-              mainInfo={[{ label: 'Names', content: [Object.values(collection.names)] }]}
-            />
-          )
-        })}
-      </div>
-    </div>
-  )
+  const mainInfoBuilder = (collection: Collection) => {
+    const collectionNames = collection.names as Record<string, string>
+    return [{ label: 'Names', content: [Object.values(collectionNames)] }]
+  }
+
+  return <PanelView items={collections} mainInfoBuilder={mainInfoBuilder} />
 }
 
 export default CollectionsView
-
-const columnStyle: React.CSSProperties = {
-  justifyContent: 'center',
-  flexDirection: 'column',
-  display: 'flex',
-  flex: 1,
-  maxWidth: '500px',
-  marginTop: '10px'
-}
